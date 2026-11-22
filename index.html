@@ -352,6 +352,7 @@ async function connectFlow(r, s, token){
   await wait(400);
 }
 function setHeader(who){
+  scrollEl.querySelector('.convhead')?.remove();
   const h = document.createElement('div'); h.className = 'convhead';
   h.innerHTML = `<img src="${AV[who]}" alt=""><div><div class="nm">${NAME[who]}</div><div class="rl">${ROLE[who]}</div></div><div class="ch">${ic('message-circle','sm')}App Yelema</div>`;
   scrollEl.insertBefore(h, chat);
@@ -395,10 +396,11 @@ a: [
   {who:'dj', card:`<div class="card-h">${ic('list-checks','sm')}Fiche entreprise remplie</div><ul class="checks"><li>${ic('check')}Entreprise et rôle confirmés</li><li>${ic('check')}Deux sujets : impayés, appels d'offres</li><li>${ic('check')}Gmail branché en lecture seule</li><li>${ic('check')}Charte validée</li><li>${ic('check')}Votre style appris sur 50 mails</li></ul><div class="src">Chaque Expert recruté la lira avant de vous écrire.</div>`},
   {who:'dj', chips:[{label:"Kouassi, commercial", star:1, reply:"Kouassi"},{label:"Mamadou, finance", reply:"Mamadou"},{label:"Adjoua, recrutement", reply:"Adjoua"}], text:"Pour vos deux sujets, je vous conseille Kouassi. On le recrute ?"},
   {who:'dj', text:"C'est fait. Il arrive demain matin, déjà briefé.", t:500},
-  {divider:"Le lendemain, Kouassi rejoint l'équipe"},
+  {divider:"Le lendemain, Kouassi rejoint votre équipe"},
+  {header:'ko'},
   {who:'ko', text:"Bonjour Mariam, je suis Kouassi, votre commercial. Djénéba m'a briefé 👇", t:600},
   {who:'ko', card:`<div class="card-h">${ic('file-text','sm')}Ce que je sais de vous</div><ul class="facts"><li>${ic('building-2','sm')}Lagune Froid Services, 42 salariés, clients hôtels et cliniques.</li><li>${ic('target','sm')}Vos priorités : les impayés et les appels d'offres.</li><li>${ic('mail','sm')}Gmail branché, votre style appris sur 50 mails.</li></ul><div class="src">Source : fiche de Djénéba, 22/11.</div>`},
-  {who:'ko', chips:[{label:"Moi", star:1, reply:"Moi"},{label:"Mon directeur commercial"},{label:"Personne sous 2 M F CFA"}], text:"Une seule question pour mon métier : qui valide un devis avant envoi ?"},
+  {who:'ko', chips:[{label:"Je valide moi-même", star:1},{label:"Mon directeur commercial"},{label:"Personne sous 2 M F CFA"}], text:"Une seule question pour mon métier : qui valide un devis avant envoi ?"},
   {who:'ko', work:"Je cherche vos factures en retard dans Gmail…", done:"6 factures en retard, 18,4 M F CFA au total.", ms:1600},
   {who:'ko', card:`<div class="card-h">${ic('briefcase','sm')}Première tâche</div><p>Je commence par quoi ?</p>`, opts:[{label:"Relancer les 6 factures", icon:'receipt', star:1},{label:"Préparer l'appel d'offres en cours"},{label:"Qualifier 20 prospects hôteliers"}]},
   {who:'ko', text:"C'est parti. Vos 6 brouillons de relance arrivent dans 10 minutes, rien ne part sans votre accord.", t:600},
@@ -420,7 +422,7 @@ b: [
   {prog:4},
   {who:'ko', card:CHARTE, opts:[{label:"C'est bon", icon:'check', star:1},{label:"J'en ai un plus récent", reply:"J'en ai un plus récent", then:[{who:'ko', text:"Déposez-le ici quand vous voulez.", t:400}]}]},
   {prog:5},
-  {who:'ko', card:`<div class="card-h acc">${ic('shield-check','sm')}Demande d'accord</div><p>Je prépare les devis, vous les validez. Qui signe au-dessus de 5 M F CFA ?</p>`, opts:[{label:"Moi", icon:'check', star:1},{label:"Mon directeur commercial"}]},
+  {who:'ko', card:`<div class="card-h acc">${ic('shield-check','sm')}Demande d'accord</div><p>Je prépare les devis, vous les validez. Qui signe au-dessus de 5 M F CFA ?</p>`, opts:[{label:"Je valide moi-même", icon:'check', star:1},{label:"Mon directeur commercial"}]},
   {prog:6},
   {who:'ko', card:`<div class="card-h">${ic('list-checks','sm')}Votre espace est prêt</div><ul class="checks"><li>${ic('check')}Profil confirmé</li><li>${ic('check')}Priorité : les impayés</li><li>${ic('check')}Gmail branché en lecture seule</li><li>${ic('check')}Style appris sur 50 mails</li><li>${ic('check')}Charte validée</li><li>${ic('check')}Vous validez chaque devis</li></ul>`},
   {who:'ko', card:`<div class="card-h">${ic('briefcase','sm')}Trois premières tâches</div><p>J'ai trouvé 6 factures en retard (18,4 M F CFA). Je lance laquelle ?</p>`, opts:[{label:"Relancer les 6 factures", icon:'receipt', star:1},{label:"Préparer l'appel d'offres en cours"},{label:"Qualifier 20 prospects hôteliers"}]},
