@@ -217,6 +217,26 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;bac
 .keys{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .keys li{display:flex;gap:8px;font-size:13.5px;line-height:1.35;color:var(--ink)}
 .keys li .ic{width:15px;height:15px;color:var(--violet-d);margin-top:2px}
+.ed{display:inline-flex;gap:2px;margin-left:auto;flex:none}
+.lnk{font-family:var(--h);font-weight:500;font-size:12px;color:var(--violet-dd);padding:3px 7px;border-radius:7px;display:inline-flex;align-items:center;gap:3px;transition:background .15s}
+.lnk:hover{background:var(--lilac)}
+.lnk .ic{width:12px;height:12px}
+.edrow{margin:3px 0 0 -7px}.edrow .ed{margin-left:0}
+.ct .ed{margin-left:auto}
+.added{animation:msg .22s var(--out) both}
+.added .tag{display:inline-block;margin-left:6px;font-family:var(--h);font-weight:500;font-size:11px;color:var(--okink);background:var(--okp);border-radius:6px;padding:1px 6px;vertical-align:1px}
+.edf{display:flex;gap:6px;margin:6px 0 2px}
+.edf input{flex:1;min-width:0;height:36px;border:1px solid var(--chipline);border-radius:10px;padding:0 10px;font-size:14px;outline:none;background:#fff}
+.edf input:focus{border-color:var(--violet)}
+.edf button{height:36px;width:36px;border-radius:10px;background:var(--violet-d);color:#fff;display:flex;align-items:center;justify-content:center}
+.blks{display:flex;flex-direction:column;gap:11px;margin-top:2px}
+.blk{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.blk .bi{width:28px;height:28px;border-radius:9px;background:var(--lavp);color:var(--violet-d);display:flex;align-items:center;justify-content:center}
+.blk .bi .ic{width:15px;height:15px}
+.blk .bt{font-family:var(--h);font-weight:600;font-size:13.5px;color:var(--indigo);margin-bottom:2px}
+.blk .bx2{font-size:14px;line-height:1.38}
+.blk .bx2 p{font-size:14px;margin:0 0 3px}
+.blk .bx2 em{font-style:normal;color:var(--grey)}
 .endnote{font-size:13px;color:var(--grey);text-align:center;margin-top:10px}
 .go{margin-top:2px}
 
@@ -286,11 +306,11 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;bac
       <li><span class="n">1</span><div><div class="t">Djénéba accueille une fois</div><div class="d">Accueil commun, puis sa propre installation : outils de direction, tâches, routines.</div></div></li>
       <li><span class="n">2</span><div><div class="t">Elle passe le relais</div><div class="d">Sujets confiés aux Experts déjà là, quatre gestes à connaître, récap épinglé dans son fil.</div></div></li>
       <li><span class="n">3</span><div><div class="t">Kouassi s'installe dans son fil</div><div class="d">Ses outils, ce qu'il a déjà trouvé, ses tâches, ses routines.</div></div></li>
-      <li><span class="n">4</span><div><div class="t">Mamadou fait de même</div><div class="d">Sage, Drive, banque en lecture, relances et trésorerie.</div></div></li>
+      <li><span class="n">4</span><div><div class="t">Mamadou s'installe en un message</div><div class="d">Outils en un accord, routines déjà prévues, puis sa première tâche. Chaque Expert suivant : 3 clics.</div></div></li>
     </ol>
     <div class="compare">
       <div><b>0 clic</b><span>et environ 190 mots tapés aujourd'hui, pour un seul Expert</span></div>
-      <div class="new"><b>27 clics</b><span>et 0 mot pour Djénéba, Kouassi et Mamadou installés</span></div>
+      <div class="new"><b>23 clics</b><span>et 0 mot pour Djénéba, Kouassi et Mamadou ; 3 clics par Expert suivant</span></div>
     </div>
     <p class="note">Exemple illustratif : Lagune Froid Services et Mariam Koné sont fictives, les montants aussi.</p>
   </aside>
@@ -327,7 +347,7 @@ let run = 0, clicks = 0, words = 0, F = 'dj', cur = 'dj', curTab = 'chat', EX = 
 
 const META = {
   avant:{change:"<b>Aujourd'hui.</b> Un long accueil, des questions déjà réglées, et c'est le client qui tape tout.", cnt:"Le client fait <b>0 clic</b> et tape <b>environ 190 mots</b>.", small:"Pour un seul Expert, dont un e-mail collé à la main."},
-  nouveau:{change:"<b>Ce qui change.</b> Djénéba accueille une fois, puis chaque Expert déjà recruté installe lui-même ses outils, ses tâches et ses routines dans son fil.", cnt:"Le client fait <b>27 clics</b> et tape <b>0 mot</b>.", small:"Djénéba 14, Kouassi 7, Mamadou 6, sur le chemin recommandé."}
+  nouveau:{change:"<b>Ce qui change.</b> Djénéba accueille une fois, puis chaque Expert déjà recruté installe lui-même ses outils, ses tâches et ses routines dans son fil.", cnt:"Le client fait <b>23 clics</b> et tape <b>0 mot</b>.", small:"Djénéba 14, Kouassi 6, Mamadou 3. Chaque Expert suivant : 3 clics."}
 };
 function live(){ const s = $('#cnt small'); if (s && (clicks || words)) s.textContent = `Votre essai : ${clicks} clic${clicks > 1 ? 's' : ''}, ${words} mot${words > 1 ? 's' : ''} tapé${words > 1 ? 's' : ''}.`; }
 function tally(c, w=0){ clicks += c; words += w; live(); }
@@ -486,19 +506,38 @@ async function chips(text, opts, token, ph){
 }
 async function multis(text, opts, token){
   await typing(600); if (token !== run) return;
-  const r = row(F, `<div class="bub">${text}</div><div class="chips">${optsHTML(opts, true)}<button class="chip val" disabled>${ic('check','sm')}Valider</button></div><div class="legend">${star}recommandé</div>`);
+  const r = row(F, `<div class="bub">${text}</div><div class="chips">${optsHTML(opts, true)}<button class="chip val" disabled>${ic('check','sm')}Valider</button></div><div class="legend">${star}recommandé${ED}</div>`);
   const os = await multi(r.querySelector('.col'), opts, token); if (token !== run) return;
   r.querySelector('.legend')?.remove(); await wait(150);
   row('me', `<div class="bub">${os.map(o => o.label).join(', ')}</div>`); await wait(250); return os;
 }
-const T = (i, t) => `<div class="ct"><span class="ci">${ic(i)}</span><b>${t}</b></div>`;
+const ED = `<span class="ed"><button class="lnk" data-ed="fix">${ic('pen-line')}Corriger</button><button class="lnk" data-ed="add">${ic('plus')}Ajouter</button></span>`;
+const BL = (i, t, body, ed = true) => `<div class="blk"><span class="bi">${ic(i)}</span><div><div class="bt">${t}</div><div class="bx2">${body}</div>${ed ? `<div class="edrow">${ED}</div>` : ''}</div></div>`;
+const T = (i, t, ed) => `<div class="ct"><span class="ci">${ic(i)}</span><b>${t}</b>${ed ? ED : ''}</div>`;
+/* Corriger ou Ajouter, sur chaque bloc : petit champ, puis la ligne apparaît « ajoutée par vous » */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ed]'); if (!b) return;
+  const host = b.closest('.blk') ? b.closest('.blk').querySelector('.bx2') : (b.closest('.card') || b.closest('.col'));
+  host.querySelector('.edf')?.remove();
+  const add = b.dataset.ed === 'add';
+  const f = document.createElement('form'); f.className = 'edf';
+  f.innerHTML = `<input type="text" placeholder="${add ? 'Ce que vous ajoutez' : 'Ce qui est à corriger'}" aria-label="${add ? 'Ajouter' : 'Corriger'}"><button type="submit" aria-label="Envoyer">${ic('send','sm')}</button>`;
+  const anchor = host.querySelector(':scope > .btns, :scope > .chips, :scope > [data-kz]');
+  anchor && !host.classList.contains('bx2') ? host.insertBefore(f, anchor) : host.appendChild(f);
+  tally(1); f.querySelector('input').focus({preventScroll:true});
+  f.onsubmit = ev => { ev.preventDefault(); const v = f.querySelector('input').value.trim(); if (!v) return;
+    tally(1, v.split(/\s+/).length);
+    const p = document.createElement('p'); p.className = 'added'; p.style.cssText = 'font-size:14px;margin:4px 0 3px';
+    p.innerHTML = `${v.replace(/</g,'&lt;')}<span class="tag">${add ? 'ajouté par vous' : 'corrigé par vous'}</span>`;
+    f.replaceWith(p); };
+});
 const reply = o => o && row('me', `<div class="bub">${o.reply || o.label}</div>`);
 
 /* ---------- carte outils : chaque branchement = un accord ---------- */
-async function toolsCard(intro, token){
+async function toolsCard(intro, token, autoNext){
   await typing(650); if (token !== run) return;
   const e = EX[F];
-  const r = row(F, `<div class="card">${T('plug', 'Mes outils')}<p>${intro}</p><ul class="tools">${e.tools.map((t, i) => `<li class="tool" data-t="${i}"><div class="tl"><span class="lg">${logo(t.k)}</span><div><div class="nm">${t.nm}</div><div class="ds">${t.ds}</div></div><span class="act"></span></div></li>`).join('')}</ul><div class="btns"><button class="btn gh" data-c="1">${ic('arrow-right')}Continuer${star}</button></div></div>`);
+  const r = row(F, `<div class="card">${T('plug', 'Mes outils', true)}<p>${intro}</p><ul class="tools">${e.tools.map((t, i) => `<li class="tool" data-t="${i}"><div class="tl"><span class="lg">${logo(t.k)}</span><div><div class="nm">${t.nm}</div><div class="ds">${t.ds}</div></div><span class="act"></span></div></li>`).join('')}</ul><div class="btns"><button class="btn gh" data-c="1">${ic('arrow-right')}${autoNext ? 'Passer pour l\'instant' : 'Continuer' + star}</button></div></div>`);
   const c = r.querySelector('.card');
   const paint = i => {
     const t = e.tools[i], a = c.querySelector(`[data-t="${i}"] .act`);
@@ -517,6 +556,7 @@ async function toolsCard(intro, token){
         box.innerHTML = `<div class="status" style="margin:0">${ic('loader-circle','spin')}Connexion à ${t.nm} en lecture seule…</div>`;
         await wait(1100); if (token !== run) return;
         t.st = 'ok'; box.remove(); paint(i); renderTabs(); recap();
+        if (autoNext) c.querySelector('[data-c]')?.dispatchEvent(new CustomEvent('auto'));
       } else { box.remove(); paint(i); }
     });
     if (AUTO) setTimeout(() => box.querySelector('[data-a="1"]')?.click(), 600);
@@ -524,8 +564,9 @@ async function toolsCard(intro, token){
   e.tools.forEach((_, i) => paint(i)); renderTabs(); recap();
   await new Promise(res => {
     const go = c.querySelector('[data-c]');
-    go.onclick = () => { if (token !== run) return; tally(1); go.disabled = true; go.classList.add('sel'); c.querySelectorAll('[data-x]').forEach(x => { x.disabled = true; x.classList.add('off'); }); c.querySelectorAll('.acc').forEach(x => x.remove()); res(); };
-    if (AUTO) setTimeout(async () => { const s = c.querySelector('[data-x].pri'); if (s){ s.click(); await wait(2600); } go.click(); }, 700);
+    const finish = n => { if (token !== run || go.disabled) return; tally(n); go.disabled = true; go.classList.add('sel'); c.querySelectorAll('[data-x]').forEach(x => { x.disabled = true; x.classList.add('off'); }); c.querySelectorAll('.acc').forEach(x => x.remove()); res(); };
+    go.onclick = () => finish(1); go.addEventListener('auto', () => finish(0));
+    if (AUTO) setTimeout(async () => { const s = c.querySelector('[data-x].pri'); if (s){ s.click(); await wait(2600); } if (!go.disabled) go.click(); }, 700);
   });
   const left = e.tools.filter(t => t.st !== 'ok').length;
   await wait(250);
@@ -538,7 +579,7 @@ async function routinesCard(list, token, opts = {}){
   await typing(650); if (token !== run) return;
   const canals = [{label:"Dans l'app", star:1, v:"dans l'app"}, {label:'Telegram', v:'sur Telegram'}, {label:'E-mail', v:'par e-mail'}];
   const known = !!G.canal;
-  const r = row(F, `<div class="card">${T('calendar-clock', opts.title || 'Mes routines')}<p>${opts.intro}</p>
+  const r = row(F, `<div class="card">${T('calendar-clock', opts.title || 'Mes routines', true)}<p>${opts.intro}</p>
     <div class="rts">${list.map((x,i) => `<button class="rt" role="checkbox" aria-checked="${x.star ? 'true' : 'false'}" data-r="${i}"><span class="bx">${ic('check')}</span><span><span class="nm">${x.nm}<span class="hr">${x.hr}</span>${x.star ? star : ''}</span><span class="ds">${x.ds}</span></span></button>`).join('')}</div>
     <div class="chips" style="margin-top:10px" data-oz="1"><button class="chip other" data-o="1">${ic('pen-line','sm')}Autre routine</button></div>
     ${known ? `<div class="fine">${ic('message-circle')}Envoyées ${G.canal}, comme celles de Djénéba.</div>` : `<div class="rlab">Où les recevoir ?</div><div class="chips" data-cz="1">${optsHTML(canals, true)}</div>`}
@@ -597,7 +638,7 @@ async function phaseDj(token){
   setFil('dj');
   await say("Bonjour Mariam 👋 Je suis Djénéba, votre Chief of Staff.", 500); if (token !== run) return;
   await say("Je fais l'accueil commun une seule fois, puis j'installe mon poste. Ensuite, Kouassi et Mamadou s'installent chacun dans leur fil.", 650); if (token !== run) return;
-  let o = await card(`${T('building-2', 'Votre fiche')}<p>J'ai lu votre site et votre page LinkedIn. C'est bien vous ?</p>
+  let o = await card(`${T('building-2', 'Votre fiche', true)}<p>J'ai lu votre site et votre page LinkedIn. C'est bien vous ?</p>
     <ul class="facts"><li>${ic('building-2')}<span>Lagune Froid Services, froid et climatisation à Marcory</span></li><li>${ic('user')}<span>Mariam Koné, directrice générale</span></li><li>${ic('users-round')}<span>42 salariés, clients hôtels, cliniques et supermarchés</span></li></ul>`,
     [{label:"Oui, c'est juste", icon:'check', star:1}, {label:'Corriger', icon:'pen-line', other:1}], token, '', 'Ce qui est faux, en quelques mots');
   if (token !== run) return; reply(o);
@@ -653,7 +694,7 @@ async function phaseDj(token){
   const li = s => s.to === 'dj'
     ? `<li><span class="me">${ic('list-checks','sm')}</span><div><div class="k">${s.label}</div><div class="v"><b>Je le suis moi-même</b> pour l'instant</div></div></li>`
     : `<li><img src="${AV[s.to]}" alt=""><div><div class="k">${s.label}</div><div class="v"><b>${NAME[s.to]}</b>, ${s.to === 'ko' ? 'commercial' : 'finance'}</div></div></li>`;
-  o = await card(`${T('users-round', 'Votre équipe')}<p>Kouassi et Mamadou sont déjà dans votre espace. Je leur confie vos sujets :</p><ul class="assign">${G.sujets.map(li).join('')}</ul>`,
+  o = await card(`${T('users-round', 'Votre équipe', true)}<p>Kouassi et Mamadou sont déjà dans votre espace. Je leur confie vos sujets :</p><ul class="assign">${G.sujets.map(li).join('')}</ul>`,
     [{label:'Valider', icon:'check', star:1}, {label:'Changer', icon:'pen-line', other:1}], token, '', 'Qui doit faire quoi ?');
   if (token !== run) return; reply(o);
   await work("Je briefe Kouassi et Mamadou…", "Briefés : ils ont votre fiche, vos sujets et votre style.", 1300); if (token !== run) return;
@@ -692,23 +733,23 @@ async function phaseKo(token){
   setFil('ko');
   const koS = G.sujets.find(s => s.to === 'ko'), maS = G.sujets.find(s => s.to === 'ma');
   await say("Bonjour Mariam, je suis Kouassi, votre commercial. Djénéba m'a briefé, je ne vous repose rien 👇", 550); if (token !== run) return;
-  await card(`${T('file-text', 'Ce que je sais de vous')}<ul class="facts nb">
-    <li>${ic('target')}<span>${koS ? `Mon sujet : ${koS.label.toLowerCase()}.` : 'Mon sujet : votre pipeline commercial.'}${maS ? ' Mamadou suit les impayés.' : ''}</span></li>
-    <li>${ic('mail')}<span>${G.gmail ? 'Gmail branché par Djénéba' : 'Gmail pas encore branché'}${G.voix ? ', votre style appris sur 50 mails.' : '.'}</span></li></ul><div class="src">Source : fiche de Djénéba, aujourd'hui.</div>`, null, token);
+  await card(`<div class="blks">
+    ${BL('briefcase', 'Mon rôle', "Je fais entrer le chiffre d'affaires : prospects, offres, relances, jusqu'à la commande.", false)}
+    ${BL('building-2', 'Ce que j\'ai compris de vous', `<p>Vous vendez la pose et l'entretien de climatisation aux hôtels, cliniques et supermarchés <em>(fiche de Djénéba)</em>.</p><p>Sur votre site, trois références hôtelières et une page Appels d'offres.</p><p>Sur votre page Facebook, deux demandes de devis restées sans réponse en commentaire.</p>`)}
+    ${BL('plug', 'Mes outils', `${G.gmail ? 'Gmail est déjà branché.' : 'Gmail n\'est pas encore branché.'} HubSpot et LinkedIn se connectent juste en dessous.`)}
+    ${BL('target', 'Les enjeux que je vois pour vous', `<p>${koS ? '2 appels d\'offres ouverts, dont l\'Hôtel des Lagunes le 5 décembre.' : '2 appels d\'offres ouverts dans vos mails.'}</p><p>14 prospects sans relance depuis plus de 30 jours.</p>`)}
+  </div>`, null, token);
   if (token !== run) return;
   EX.ko.tools = [
     {k:'gmail', nm:'Gmail', ds: G.gmail ? 'Branché avec votre accord, via Djénéba' : 'Vos échanges clients', st: G.gmail ? 'ok' : 'todo', via: G.gmail, acc:"Je lis vos échanges clients en lecture seule. Vous autorisez ?"},
     {k:'hubspot', nm:'HubSpot', ds:'Ou votre CRM sur Google Sheets', st:'todo', star:1, acc:"Je lis vos contacts et vos affaires en cours, sans rien modifier. Vous autorisez ?"},
     {k:'linkedin', nm:'LinkedIn', ds:'Pour qualifier vos prospects', st:'todo', acc:"Je consulte les profils publics de vos prospects, sans rien publier. Vous autorisez ?"}
   ];
-  await toolsCard("Pour mon métier, il me faut ces trois outils. Ce qui est déjà branché ne vous sera pas redemandé.", token); if (token !== run) return;
+  await toolsCard("Pour mon métier, il me faut ces trois outils. Ce qui est déjà branché ne vous sera pas redemandé.", token, true); if (token !== run) return;
   G.ko.outils = EX.ko.tools.filter(t => t.st === 'ok').length >= 2; recap();
   const crm = EX.ko.tools[1].st === 'ok';
-  await work(`Je regarde vos mails${crm ? ' et HubSpot' : ''}…`, "C'est fait, j'ai trouvé deux choses.", 1300); if (token !== run) return;
-  const o = await card(`${T('briefcase', "J'ai déjà regardé")}<ul class="facts nb">
-      <li>${ic('file-text')}<span><b>2 appels d'offres ouverts</b>, dont l'Hôtel des Lagunes (14 climatiseurs) qui ferme le 5 décembre.</span></li>
-      <li>${ic('users-round')}<span><b>14 prospects</b> sans relance depuis plus de 30 jours.</span></li></ul>
-      <p style="margin-top:10px">Je lance quoi en premier ?</p><div class="tip">${ic('terminal')}<span>Astuce : tapez <code>/relance</code> pour les relances du jour.</span></div>`,
+  await work(`Je regarde vos mails${crm ? ' et HubSpot' : ''}…`, "C'est fait, trois tâches sont prêtes.", 1200); if (token !== run) return;
+  const o = await card(`${T('briefcase', 'Ce que je peux faire pour vous', true)}<p>Je lance quoi en premier ?</p><div class="tip">${ic('terminal')}<span>Astuce : tapez <code>/relance</code> pour les relances du jour.</span></div>`,
     [{label:"Préparer l'offre du 5 décembre", icon:'file-text', star:1}, {label:'Relancer les 14 prospects'}, {label:'Autre', icon:'pen-line', other:1}], token, '', 'Votre première tâche');
   if (token !== run) return; reply(o);
   G.ko.tache = true; EX.ko.livr = [{nm: o.other ? o.label : o.label, ds:'Brouillon demain à 9 h'}]; recap(); renderTabs();
@@ -717,47 +758,81 @@ async function phaseKo(token){
   await routinesCard([
     {nm:'Relance des devis sans réponse', hr:'mardi 9 h', ds:'Je prépare les relances, vous validez en un clic.', star:1},
     {nm:'Point pipeline', hr:'lundi 8 h 30', ds:'Les affaires de la semaine et ce qui bloque.'}
-  ], token, {intro:'Deux routines pour tenir vos ventes. Gardez celles qui vous servent.'});
+  ], token, {title:'Les routines que je vous propose', intro:'Deux routines pour tenir vos ventes. Gardez celles qui vous servent.'});
   if (token !== run) return;
   G.ko.routines = EX.ko.routines.length > 0; recap();
   await say("C'est parti, le brouillon arrive demain à 9 h dans l'onglet Livrables. Pendant que j'y travaille, <code>/btw</code> pose une question sans m'interrompre, <code>/stop</code> m'arrête.", 550); if (token !== run) return;
   return invite('ma', "Mamadou vous attend dans son fil.", token);
 }
 
-/* ---------- 3. Mamadou ---------- */
+/* ---------- 3. Mamadou : installation en un message (modèle de chaque Expert suivant) ---------- */
 async function phaseMa(token){
   setFil('ma');
   const maS = G.sujets.find(s => s.to === 'ma');
-  await say("Bonjour Mariam, je suis Mamadou, votre Expert finance. Djénéba m'a briefé 👇", 550); if (token !== run) return;
-  await card(`${T('file-text', 'Ce que je sais de vous')}<ul class="facts nb">
-    <li>${ic('target')}<span>${maS ? `Mon sujet : ${maS.label.toLowerCase()}.` : 'Mon sujet : vos comptes et votre trésorerie.'}</span></li>
-    <li>${ic('mail')}<span>${G.gmail ? 'Gmail branché par Djénéba, vos factures envoyées y sont.' : 'Gmail pas encore branché.'}</span></li></ul><div class="src">Source : fiche de Djénéba, aujourd'hui.</div>`, null, token);
-  if (token !== run) return;
   EX.ma.tools = [
-    {k:'gmail', nm:'Gmail', ds: G.gmail ? 'Branché avec votre accord, via Djénéba' : 'Vos factures envoyées', st: G.gmail ? 'ok' : 'todo', via: G.gmail, acc:"Je lis vos factures envoyées, en lecture seule. Vous autorisez ?"},
-    {k:'sage', nm:'Sage', ds:'Ou Odoo, votre comptabilité', st:'todo', star:1, acc:"Je lis vos factures et vos encaissements, sans rien saisir. Vous autorisez ?"},
-    {k:'drive', nm:'Drive et Excel', ds:'Vos tableaux de suivi', st:'todo', acc:"Je lis le dossier Finance de votre Drive, sans rien modifier. Vous autorisez ?"},
-    {k:'landmark', nm:'Votre banque', ds:'Relevés en lecture seule', st:'todo', acc:"Je lis vos relevés bancaires, sans aucun droit de paiement. Vous autorisez ?"}
+    {k:'gmail', nm:'Gmail', ds:'Branché avec votre accord, via Djénéba', st: G.gmail ? 'ok' : 'todo'},
+    {k:'sage', nm:'Sage', ds:'Ou Odoo, votre comptabilité', st:'todo'},
+    {k:'drive', nm:'Drive et Excel', ds:'Vos tableaux de suivi', st:'todo'},
+    {k:'landmark', nm:'Votre banque', ds:'Relevés en lecture seule', st:'todo'}
   ];
-  await toolsCard("Pour mon métier, il me faut ces outils. Gmail est déjà là, je ne vous le redemande pas.", token); if (token !== run) return;
-  G.ma.outils = EX.ma.tools.filter(t => t.st === 'ok').length >= 2; recap();
-  await work(`Je rapproche vos factures${EX.ma.tools[1].st === 'ok' ? ' dans Sage' : ''} et vos mails…`, "C'est fait, j'ai trouvé deux choses.", 1300); if (token !== run) return;
-  const o = await card(`${T('briefcase', "J'ai déjà regardé")}<ul class="facts nb">
-      <li>${ic('receipt')}<span><b>6 factures en retard</b>, 18,4 M F CFA au total, dont 3 chez le même client hôtelier.</span></li>
-      <li>${ic('calendar-clock')}<span><b>2 échéances fournisseurs</b> avant la fin du mois.</span></li></ul>
-      <p style="margin-top:10px">Je lance quoi en premier ?</p><div class="tip">${ic('terminal')}<span>Astuce : <code>/rapprochement</code> rapproche la banque et le mobile money de votre comptabilité.</span></div>`,
-    [{label:'Relancer les 6 factures', icon:'receipt', star:1}, {label:'Préparer le point trésorerie'}, {label:'Autre', icon:'pen-line', other:1}], token, '', 'Votre première tâche');
+  EX.ma.routines = [
+    {nm:'Relances clients', hr:'jeudi 10 h', ds:'Les factures échues, avec un brouillon de relance par client.'},
+    {nm:'Point trésorerie', hr:'vendredi 16 h', ds:'Encaissements, décaissements et solde prévu à 30 jours.'}
+  ];
+  G.ma.routines = true; renderTabs(); recap();
+  await typing(700); if (token !== run) return;
+  const todo = EX.ma.tools.filter(t => t.st !== 'ok');
+  const r = row(F, `<div class="card">
+    <p style="margin-bottom:12px">Bonjour Mariam, je suis Mamadou, votre Expert finance. Djénéba m'a briefé, mon installation tient dans ce message.</p>
+    <div class="blks">
+    ${BL('briefcase', 'Mon rôle', 'Je tiens vos comptes : factures, encaissements, trésorerie, échéances DGI et CNPS.', false)}
+    ${BL('building-2', 'Ce que j\'ai compris de vous', `<p>Lagune Froid Services, 42 salariés${maS ? `, et vous voulez ${maS.label.toLowerCase()}` : ''} <em>(fiche de Djénéba)</em>.</p><p>Sur votre site, des contrats de maintenance annuels pour hôtels et cliniques.</p><p>Sur votre page Facebook, une promotion de climatiseurs en novembre : des ventes à encaisser vite.</p>`)}
+    ${BL('plug', 'Mes outils', `<div class="chips" style="margin:2px 0 0">${EX.ma.tools.filter(t => t.st === 'ok').map(t => `<span class="pill ok">${ic('check')}${t.nm} déjà branché</span>`).join('')}</div>
+      <div class="tool acc" style="padding:10px 11px;margin-top:8px;border-radius:14px;background:var(--lilac2);border:1px solid var(--chipline)">
+      <div style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.35"><span style="width:24px;height:24px;border-radius:8px;background:var(--indigo);color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${ic('lock','sm')}</span>
+      <span>Il me manque <b>${todo.map(t => t.nm).join(', ').replace(/, ([^,]*)$/, ' et $1').replace(' Votre', ' votre')}</b>, en lecture seule, sans aucun droit de paiement.</span></div>
+      <div class="btns" style="margin-top:9px" data-tz="1"><button class="btn pri sm" data-i="0">${ic('check')}Autoriser les ${todo.length}${star}</button><button class="btn gh sm" data-i="1">Plus tard</button></div></div>`)}
+    ${BL('target', 'Les enjeux que je vois pour vous', `<p>6 factures en retard, 18,4 M F CFA, dont 3 chez le même hôtel.</p><p>La maintenance se facture en janvier : votre trésorerie se tend en décembre.</p><p>2 échéances fournisseurs avant la fin du mois.</p>`)}
+    ${BL('list-checks', 'Ce que je peux faire pour vous', `<div class="btns" data-kz="1" style="margin-top:6px"></div>`)}
+    ${BL('calendar-clock', 'Les routines que je vous propose', `Relances clients le jeudi à 10 h et trésorerie le vendredi à 16 h, ${G.canal || "dans l'app"}. Elles sont déjà cochées. <button class="mod" style="color:var(--violet-dd);font-family:var(--h);font-weight:600;text-decoration:underline;text-underline-offset:2px">Modifier</button>`)}
+    </div>
+    <div class="tip">${ic('terminal')}<span>Astuce : <code>/rapprochement</code> rapproche la banque et le mobile money de votre comptabilité.</span></div></div>`);
+  const c = r.querySelector('.card');
+  c.querySelector('.mod').onclick = () => { curTab = 'rout'; show(); };
+  // outils : un seul accord pour tout ce qui manque (facultatif pour lancer une tâche)
+  const tz = c.querySelector('[data-tz]'), tb = [...tz.querySelectorAll('[data-i]')];
+  tb.forEach(b => b.onclick = async () => {
+    if (token !== run || b.disabled) return; tally(1);
+    tb.forEach(x => { x.disabled = true; if (x !== b) x.classList.add('off'); }); b.classList.add('sel');
+    if (b.dataset.i === '0'){
+      tz.outerHTML = `<div class="status" style="margin-top:9px">${ic('loader-circle','spin')}Connexion en lecture seule…</div>`;
+      await wait(1100); if (token !== run) return;
+      EX.ma.tools.forEach(t => t.st = 'ok'); G.ma.outils = true;
+      c.querySelector('.tool.acc .status').outerHTML = `<div class="status ok" style="margin-top:9px">${ic('circle-check')}Sage, Drive et votre banque sont branchés.</div>`;
+    } else {
+      tz.outerHTML = `<div class="status" style="margin-top:9px">${ic('clock')}Ils restent dans l'onglet Outils.</div>`;
+    }
+    renderTabs(); recap();
+  });
+  if (AUTO) setTimeout(() => tb[0].click(), 650);
+  // tâches
+  const opts = [{label:'Relancer les 6 factures', icon:'receipt', star:1}, {label:'Prévoir la trésorerie de décembre'}, {label:'Préparer les échéances fournisseurs'}, {label:'Autre', icon:'pen-line', other:1}];
+  const kz = c.querySelector('[data-kz]'); kz.innerHTML = optsHTML(opts);
+  if (AUTO) await wait(2600);
+  const o = await new Promise(res => {
+    const btns = [...kz.querySelectorAll('[data-i]')];
+    btns.forEach(b => b.onclick = async () => {
+      if (token !== run || b.disabled) return;
+      const op = opts[+b.dataset.i];
+      btns.forEach(x => { x.disabled = true; if (x !== b) x.classList.add('off'); }); b.classList.add('sel'); tally(1);
+      if (op.other){ const v = await otherField(kz.parentElement, token, 'Votre première tâche'); res({...op, label:v}); } else res(op);
+    });
+    if (AUTO) setTimeout(() => btns[0].click(), 300);
+  });
   if (token !== run) return; reply(o);
   G.ma.tache = true; EX.ma.livr = [{nm: o.label, ds:'Brouillons dans 10 minutes'}]; recap(); renderTabs();
-  await routinesCard([
-    {nm:'Relances clients', hr:'jeudi 10 h', ds:'Les factures échues, avec un brouillon de relance par client.', star:1},
-    {nm:'Point trésorerie', hr:'vendredi 16 h', ds:'Encaissements, décaissements et solde prévu à 30 jours.'}
-  ], token, {intro:'Deux routines pour garder vos comptes à jour. Gardez celles qui vous servent.'});
-  if (token !== run) return;
-  G.ma.routines = EX.ma.routines.length > 0; recap();
-  await say("C'est parti. Les 6 brouillons de relance arrivent dans 10 minutes, rien ne part sans votre accord.", 550); if (token !== run) return;
-  await say("Vous pouvez aussi me parler : envoyez un vocal 🎙️ Avec <code>/voice on</code>, je vous réponds à voix haute.", 500); if (token !== run) return;
-  const e = document.createElement('div'); e.className = 'endnote'; e.textContent = "Fin du parcours. Le récap épinglé dans le fil de Djénéba est à jour."; EX.ma.chat.appendChild(e); down();
+  await say("C'est parti, brouillons dans 10 minutes. Vous pouvez aussi me parler par vocal 🎙️, et <code>/voice on</code> me fait répondre à voix haute.", 550); if (token !== run) return;
+  const e = document.createElement('div'); e.className = 'endnote'; e.textContent = "Fin du parcours. Chaque Expert suivant s'installe comme Mamadou, en 3 clics."; EX.ma.chat.appendChild(e); down();
 }
 
 /* ---------- lancement ---------- */
