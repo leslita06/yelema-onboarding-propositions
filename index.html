@@ -67,7 +67,9 @@ button{cursor:pointer;border:0;background:none}
 .fil img{width:28px;height:28px;border-radius:999px;object-fit:cover;flex:none}
 .fil:hover{background:var(--lilac2)}
 .fil.on{background:var(--lilac);border-color:var(--chipline)}
-.fil .un{position:absolute;top:-5px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--coral);color:#fff;font-family:var(--b);font-weight:600;font-size:11px;display:none;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
+.fil .un{position:absolute;top:-5px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--violet-d);color:#fff;font-family:var(--b);font-weight:600;font-size:11px;display:none;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
+.fil .av{position:relative;flex:none;display:inline-flex}
+.fil .av::after{content:"";position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:9px;background:#22A45D;box-shadow:0 0 0 2px #fff}
 .fil .un.show{display:flex;animation:pop .3s var(--out) both}
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 .etabs{flex:none;display:flex;gap:2px;padding:0 10px;border-bottom:1px solid var(--line)}
@@ -77,7 +79,7 @@ button{cursor:pointer;border:0;background:none}
 .et.on::after{content:"";position:absolute;left:6px;right:6px;bottom:-1px;height:2px;border-radius:2px;background:var(--violet-d)}
 .et .bd{min-width:17px;height:17px;padding:0 5px;border-radius:999px;background:var(--lilac);color:var(--violet-dd);font-family:var(--b);font-weight:600;font-size:11px;display:none;align-items:center;justify-content:center}
 .et .bd.show{display:inline-flex;animation:pop .3s var(--out) both}
-.et .bd.hot{background:var(--coral);color:#fff}
+.et .bd.hot{background:var(--violet-d);color:#fff}
 
 /* écran */
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--white);position:relative}
@@ -356,20 +358,20 @@ function tally(c, w=0){ clicks += c; words += w; live(); }
 function freshState(){
   EX = {
     dj:{role:'Chief of Staff', last:null, chat:null, unread:0, tools:[{k:'gmail', nm:'Gmail', ds:'Pour toute l\'équipe, en lecture seule', st:'todo'}], routines:[], livr:[], routPending:false},
-    ko:{role:'Expert commercial', last:null, chat:null, unread:0, tools:[], routines:[], livr:[], routPending:false},
-    ma:{role:'Expert finance', last:null, chat:null, unread:0, tools:[], routines:[], livr:[], routPending:false}
+    ko:{role:'Expert commercial', pending:true, last:null, chat:null, unread:0, tools:[], routines:[], livr:[], routPending:false},
+    ma:{role:'Expert finance', pending:true, last:null, chat:null, unread:0, tools:[], routines:[], livr:[], routPending:false}
   };
   G = {accueil:false, dj:{outils:false, tache:false, routines:false}, ko:{outils:false, tache:false, routines:false}, ma:{outils:false, tache:false, routines:false}, gmail:false, voix:false};
 }
 function renderFils(){
-  $('#fils').innerHTML = ['dj','ko','ma'].map(w => `<button class="fil${w === cur ? ' on' : ''}" data-w="${w}"><img src="${AV[w]}" alt="">${NAME[w]}<span class="un${EX[w].unread ? ' show' : ''}">${EX[w].unread || ''}</span></button>`).join('');
+  $('#fils').innerHTML = ['dj','ko','ma'].map(w => `<button class="fil${w === cur ? ' on' : ''}" data-w="${w}"><span class="av" title="En ligne"><img src="${AV[w]}" alt=""></span>${NAME[w]}<span class="un${(EX[w].unread || EX[w].pending) ? ' show' : ''}" ${EX[w].pending && !EX[w].unread ? 'title="Installation à finir"' : ''}>${EX[w].unread || (EX[w].pending ? 1 : '')}</span></button>`).join('');
   $('#fils').querySelectorAll('.fil').forEach(b => b.onclick = () => openFil(b.dataset.w, true));
 }
 function renderTabs(){
   const e = EX[cur];
   const todoTools = e.tools.filter(t => t.st !== 'ok').length;
-  const T = [['chat','Discussion', e.unread ? '' : ''], ['livr','Livrables', e.livr.length || ''], ['rout','Routines', e.routPending ? '1' : ''], ['tools','Outils', todoTools || '']];
-  $('#etabs').innerHTML = T.map(([k, l, b]) => `<button class="et${curTab === k ? ' on' : ''}" data-t="${k}">${l}<span class="bd${b !== '' ? ' show' : ''}${k === 'rout' || k === 'tools' ? ' hot' : ''}">${b}</span></button>`).join('');
+  const T = [['chat','Discussion', e.pending ? '1' : ''], ['livr','Livrables', e.livr.length || ''], ['rout','Routines', e.routPending ? '1' : ''], ['tools','Outils', todoTools || '']];
+  $('#etabs').innerHTML = T.map(([k, l, b]) => `<button class="et${curTab === k ? ' on' : ''}" data-t="${k}">${l}<span class="bd${b !== '' ? ' show' : ''}${k !== 'livr' ? ' hot' : ''}">${b}</span></button>`).join('');
   $('#etabs').querySelectorAll('.et').forEach(b => b.onclick = () => { curTab = b.dataset.t; show(); });
 }
 function openFil(w, user){
@@ -617,12 +619,11 @@ async function routinesCard(list, token, opts = {}){
 
 /* ---------- attendre que le client ouvre un fil ---------- */
 async function invite(w, text, token){
-  await typing(500); if (token !== run) return;
-  const r = row(F, `<div class="bub">${text}</div><div class="go"><button class="btn pri" data-i="0"><img src="${AV[w]}" alt="" style="border-radius:99px;width:20px;height:20px">Ouvrir le fil de ${NAME[w]}${star}</button></div>`);
+  await say(`${text} Touchez son nom en haut : la pastille 1 reste tant que son installation n'est pas finie.`, 500); if (token !== run) return;
+  renderFils();
   return new Promise(res => {
     filWaiter = {w, res};
-    r.querySelector('[data-i]').onclick = () => { if (token !== run) return; r.querySelector('[data-i]').disabled = true; r.querySelector('[data-i]').classList.add('sel'); openFil(w, true); };
-    if (AUTO) setTimeout(() => r.querySelector('[data-i]').click(), 700);
+    if (AUTO) setTimeout(() => document.querySelector(`.fil[data-w=${w}]`).click(), 700);
   });
 }
 
@@ -760,7 +761,7 @@ async function phaseKo(token){
     {nm:'Point pipeline', hr:'lundi 8 h 30', ds:'Les affaires de la semaine et ce qui bloque.'}
   ], token, {title:'Les routines que je vous propose', intro:'Deux routines pour tenir vos ventes. Gardez celles qui vous servent.'});
   if (token !== run) return;
-  G.ko.routines = EX.ko.routines.length > 0; recap();
+  G.ko.routines = EX.ko.routines.length > 0; EX.ko.pending = false; renderFils(); recap();
   await say("C'est parti, le brouillon arrive demain à 9 h dans l'onglet Livrables. Pendant que j'y travaille, <code>/btw</code> pose une question sans m'interrompre, <code>/stop</code> m'arrête.", 550); if (token !== run) return;
   return invite('ma', "Mamadou vous attend dans son fil.", token);
 }
@@ -830,7 +831,7 @@ async function phaseMa(token){
     if (AUTO) setTimeout(() => btns[0].click(), 300);
   });
   if (token !== run) return; reply(o);
-  G.ma.tache = true; EX.ma.livr = [{nm: o.label, ds:'Brouillons dans 10 minutes'}]; recap(); renderTabs();
+  G.ma.tache = true; EX.ma.pending = false; renderFils(); EX.ma.livr = [{nm: o.label, ds:'Brouillons dans 10 minutes'}]; recap(); renderTabs();
   await say("C'est parti, brouillons dans 10 minutes. Vous pouvez aussi me parler par vocal 🎙️, et <code>/voice on</code> me fait répondre à voix haute.", 550); if (token !== run) return;
   const e = document.createElement('div'); e.className = 'endnote'; e.textContent = "Fin du parcours. Chaque Expert suivant s'installe comme Mamadou, en 3 clics."; EX.ma.chat.appendChild(e); down();
 }
